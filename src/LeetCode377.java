@@ -304,3 +304,69 @@ class Solution {
         return comb[target];
     }
 }
+
+
+
+class Solution {
+    public int combinationSum4(int[] candidates, int target) {
+        int[][] f = new int[candidates.length + 1][target + 1];
+        for (int i = 1; i <= candidates.length; i++) {
+            f[i][0] = 1;
+            for (int j = 1; j <= target; j++) {
+                for (int k = 0; k < i; k++) {
+                    int coin = candidates[k];
+                    if (j - coin >= 0) {
+                        f[i][j] += f[i][j - coin];
+                    }
+                }
+            }
+        }
+        for (int[] row : f) {
+            System.out.println(Arrays.toString(row));
+        }
+        return f[candidates.length][target];
+    }
+}
+
+
+
+
+class Solution {
+    // DP optimize space, AC
+    public int combinationSum4(int[] candidates, int target) {
+        int[] f = new int[target + 1];
+        f[0] = 1;
+            for (int j = 1; j <= target; j++) {
+                for (int k = 0; k < candidates.length; k++) {
+                    int coin = candidates[k];
+                    if (j - coin >= 0) {
+                        f[j] += f[j - coin];
+                    }
+                }
+            }
+
+        System.out.println(Arrays.toString(f));
+
+        return f[target];
+    }
+}
+
+
+
+class Solution {
+    // DP optimization, AC
+    public int combinationSum4(int[] candidates, int target) {
+        int[] f = new int[target + 1];
+        f[0] = 1;
+        Arrays.sort(candidates);
+        for (int j = 1; j <= target; j++) {
+            for (int coin : candidates) {
+                if (j - coin < 0) {
+                    break;
+                }
+                f[j] += f[j - coin];
+            }
+        }
+        return f[target];
+    }
+}

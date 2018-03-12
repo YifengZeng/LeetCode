@@ -29,3 +29,42 @@ class Solution {
         return memo[amount][index] = number;
     }
 }
+
+
+
+class Solution {
+    // DP AC
+    public int change(int amount, int[] coins) {
+        int[][] f = new int[coins.length + 1][amount + 1];
+        f[0][0] = 1;
+        for (int i = 1; i <= coins.length; i++) {
+            f[i][0] = 1;
+            int coin = coins[i - 1];
+            for (int j = 1; j <= amount; j++) {
+                f[i][j] = f[i - 1][j];
+                if (j - coin >= 0) {
+                    f[i][j] += f[i][j - coin];
+                }
+            }
+        }
+        return f[coins.length][amount];
+    }
+}
+
+
+
+class Solution {
+    // DP space optimization AC
+    public int change(int amount, int[] coins) {
+        int[] f = new int[amount + 1];
+        f[0] = 1;
+        for (int coin : coins) {
+            for (int j = 1; j <= amount; j++) {
+                if (j - coin >= 0) {
+                    f[j] += f[j - coin];
+                }
+            }
+        }
+        return f[amount];
+    }
+}

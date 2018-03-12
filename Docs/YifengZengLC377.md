@@ -1,5 +1,5 @@
 # **LeetCode 39 40 216 377**
----
+
 https://leetcode.com/problems/combination-sum/description/
 https://leetcode.com/problems/combination-sum-ii/description/
 https://leetcode.com/problems/combination-sum-iii/description/
@@ -8,7 +8,7 @@ https://leetcode.com/problems/combination-sum-iv/description/
 Yifeng Zeng
 
 # Description
----
+
 [39. Combination Sum](https://leetcode.com/problems/combination-sum/description/)
 
 [40. Combination Sum II](https://leetcode.com/problems/combination-sum-ii/description/)
@@ -19,7 +19,6 @@ Yifeng Zeng
 
 
 # Idea Report
----
 
 For LC 39, we are looking for any combination that has the sum of the target. So this becomes a problem that is very similar like subset or permutation problem. So we can do a search. For example we have [2,3,6,7] and target is 7. We can add 2 in the result and looking for 7 - 2 = 5 recursively in the [2,3,6,7] input array. And when we find out that if the target decreases to 0, we found one of the result. This becomes a very standard DFS search problem.
 
@@ -368,8 +367,90 @@ class Solution {
 ```
 
 # Summary
----
+
 - Use for loop or choose/not choose an element to divid it into sub problems to do the DFS.
 - Use the following code to early stop the search to speed up:
   - ```if (target - candidates[i] < 0) {break;}```
 - DP would consider the last step and from last to begnning, and consider the first base case.
+
+
+# Combination Sum IV Follow up
+
+The primitive DP idea is to draw the table
+
+|         | 0 amount | 1   | 2   | 3   | 4   |
+| ------- | -------- | --- | --- | --- | --- |
+| 0  coin | 1        | 0   | 0   | 0   | 0   |
+| 1       | 1        | 1   | 1   | 1   | 1   |
+| 2       | 1        | 1   | 2   | 3   | 5   |
+| 3       | 1        | 1   | 2   | 4   | 7   |
+
+We define int[][] f, f[i][j] means there are f[i][j] possible combinations that add up to the amount j using the first i coins in the candidates. The initialization is let all f[][0] = 1 because we always have 1 way to make the amount of 0. For each f[i][j], we need to check f[i][j - coins[0]], f[i][j - coins[1]], f[i][j - coins[2]], f[i][j - coins[3]], ..., f[i][j - coins[i]] and sum them together. Because for f[i][j], we have f[i][j - coins[i]] ways to make f[i][j] (based on add coins[i] amount to  j - coins[i] amount).
+
+```java
+class Solution {
+    public int combinationSum4(int[] candidates, int target) {
+        int[][] f = new int[candidates.length + 1][target + 1];
+        for (int i = 1; i <= candidates.length; i++) {
+            f[i][0] = 1;
+            for (int j = 1; j <= target; j++) {
+                for (int k = 0; k < i; k++) {
+                    int coin = candidates[k];
+                    if (j - coin >= 0) {
+                        f[i][j] += f[i][j - coin];
+                    }
+                }
+            }
+        }
+        for (int[] row : f) {
+            System.out.println(Arrays.toString(row));
+        }
+        return f[candidates.length][target];
+    }
+}
+```
+
+Because we don't really use the information from previous rows, so we can juse use a 1-D array.
+```java
+class Solution {
+    // DP optimize space, AC
+    public int combinationSum4(int[] candidates, int target) {
+        int[] f = new int[target + 1];
+        f[0] = 1;
+            for (int j = 1; j <= target; j++) {
+                for (int k = 0; k < candidates.length; k++) {
+                    int coin = candidates[k];
+                    if (j - coin >= 0) {
+                        f[j] += f[j - coin];
+                    }
+                }
+            }
+
+        System.out.println(Arrays.toString(f));
+
+        return f[target];
+    }
+}
+```
+
+After clearing up
+
+```java
+class Solution {
+    // DP optimization, AC
+    public int combinationSum4(int[] candidates, int target) {
+        int[] f = new int[target + 1];
+        f[0] = 1;
+        Arrays.sort(candidates);
+        for (int j = 1; j <= target; j++) {
+            for (int coin : candidates) {
+                if (j - coin < 0) {
+                    break;
+                }
+                f[j] += f[j - coin];
+            }
+        }
+        return f[target];
+    }
+}
+```
