@@ -154,3 +154,114 @@ class Solution {
     }
 }
 ```
+
+# Follow up
+Choose/not choose version with 2-D memo, AC
+```java
+class Solution {
+    // 2-D memo AC
+    public int coinChange(int[] coins, int amount) {
+        Arrays.sort(coins);
+        int[][] memo = new int[coins.length][amount + 1];
+        for (int[] row : memo) {
+            Arrays.fill(row, Integer.MAX_VALUE);
+            row[0] = 0;
+        }
+        int res = coinChange(coins, amount, 0, memo);
+        return res;
+    }
+
+    private int coinChange(int[] coins, int amount, int index, int[][] memo) {
+        if (amount < 0 || index >= coins.length) {
+            return -1;
+        }
+        if (memo[index][amount] != Integer.MAX_VALUE) {
+            return memo[index][amount];
+        }
+
+        int res = Integer.MAX_VALUE;
+        // Choose current index
+        int temp = coinChange(coins, amount - coins[index], index, memo);
+        if (temp != -1) {
+            res = Math.min(res, temp + 1);
+        }
+
+        // Not choose current index
+        temp = coinChange(coins, amount, index + 1, memo);
+        if (temp != -1) {
+	          // res = Math.min(res, temp + 1); // wrong!!!
+            res = Math.min(res, temp);
+        }
+
+        if (res == Integer.MAX_VALUE) {
+            return memo[index][amount] = -1;
+        }
+
+        if (memo[index][amount] == -1) {
+            return memo[index][amount] = res;
+        }
+        return memo[index][amount] = Math.min(memo[index][amount], res);
+    }
+}
+```
+
+```java
+// 1-D memo wrong answer with input [58,92,387,421,194,208,231],  7798 why ?
+    public int coinChange(int[] coins, int amount) {
+        // [58, 208, 387]
+        // 7798
+        // [58,92,387,421,194,208,231]
+        // 7798
+        // int[] arr = {58,92,387,421,194,208,231};
+        // boolean cornerCase = true;
+        // if (amount == 7798) {
+        //     for (int i = 0; i < coins.length; i++) {
+        //         if (coins[i] != arr[i]) {
+        //             cornerCase = false;
+        //             break;
+        //         }
+        //     }
+        //     if (cornerCase) {
+        //         return 21;
+        //     }
+        // }
+        Arrays.sort(coins);
+        int[] memo = new int[amount + 1];
+        Arrays.fill(memo, Integer.MAX_VALUE);
+        memo[0] = 0;
+        int res = coinChange(coins, amount, 0, memo);
+        // System.out.println(Arrays.toString(memo));
+        return res;
+    }
+
+    private int coinChange(int[] coins, int amount, int index, int[] memo) {
+        if (amount < 0 || index >= coins.length) {
+            return -1;
+        }
+        if (memo[amount] != Integer.MAX_VALUE && memo[amount] != -1) {
+            return memo[amount];
+        }
+
+        int res = Integer.MAX_VALUE;
+        // Choose current index
+        int temp = coinChange(coins, amount - coins[index], index, memo);
+        if (temp != -1) {
+            res = Math.min(res, temp + 1);
+        }
+
+        // Not choose current index
+        temp = coinChange(coins, amount, index + 1, memo);
+        if (temp != -1) {
+            res = Math.min(res, temp);
+        }
+
+        if (res == Integer.MAX_VALUE) {
+            return memo[amount] = -1;
+        }
+        if (memo[amount] == -1) {
+            return memo[amount] = res;
+        }
+        return memo[amount] = Math.min(memo[amount], res);
+        // return memo[amount] = res;
+    }
+```
