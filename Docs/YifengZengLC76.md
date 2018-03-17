@@ -60,44 +60,45 @@ public class Solution {
 }
 ```
 
-The comparison from above code actually takes O(256) each time, so we may want to optimize that. Still we can have a int[] hash to save all the characters in T, at the same time, we count the number of
-
-```java
-class Solution {
-  public String minWindow(String s, String t) {
-      if (t == null || t.length() == 0 || s == null || s.length() == 0) {
-          return "";
-      }
-
-      int[] hash = new int[256];
-      int count = 0;
-      for (char ch : t.toCharArray()) {
-          hash[ch]++;
-          count++;
-      }
-
-      int i = 0;
-      int j = 0;
-      int min = Integer.MAX_VALUE;
-      String res = "";
-      while (j < s.length()) {
-          while (j < s.length() && count > 0) {
-              hash[s.charAt(j)]--;
-              j++;
-              count--;
-          }
-          if (j - i < min) {
-              min = j - i;
-              res = s.substring(i, j);
-          }
-          while (hash[s.charAt(i)] < 0) {
-              hash[s.charAt(i)]++;
-              i++;
-          }
-      }
-  }
-}
-```
 
 # Summary
 - Comparing a hash of string is faster, so use a hash to store the different charater count.
+
+# Follow up
+```java
+class Solution {
+    public String minWindow(String s, String t) {
+        int[] hash = new int[256];
+        for (char ch : t.toCharArray()) {
+            hash[ch]++;
+        }
+        int count = t.length();
+        int len = s.length();
+        String res = "";
+        int i = 0;
+        int j = 0;
+        while (j < s.length()) {
+            char ch = s.charAt(j);
+            hash[ch]--;
+            if (hash[ch] >= 0) {
+                count--;
+            }
+
+            while (count == 0) {
+                hash[s.charAt(i)]++;
+                if (hash[s.charAt(i)] > 0) {
+                    count++;
+                }
+                if (len >= j - i + 1) {
+                    len = j - i + 1;
+                    res = s.substring(i, j + 1);
+                }
+                i++;
+            }
+            j++;
+        }
+
+        return res;
+    }
+}
+```
