@@ -38,3 +38,40 @@ public class Solution {
       return true;
   }
 }
+
+
+class Solution {
+    public String minWindow(String s, String t) {
+        int[] hash = new int[256];
+        for (char ch : t.toCharArray()) {
+            hash[ch]++;
+        }
+        int count = t.length();
+        int len = s.length();
+        String res = "";
+        int i = 0;
+        int j = 0;
+        while (j < s.length()) {
+            char ch = s.charAt(j);
+            hash[ch]--;
+            if (hash[ch] >= 0) {
+                count--;
+            }
+
+            while (count == 0) {
+                hash[s.charAt(i)]++;
+                if (hash[s.charAt(i)] > 0) {
+                    count++;
+                }
+                if (len >= j - i + 1) {
+                    len = j - i + 1;
+                    res = s.substring(i, j + 1);
+                }
+                i++;
+            }
+            j++;
+        }
+
+        return res;
+    }
+}
