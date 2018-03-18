@@ -65,17 +65,53 @@ class Solution {
         int len = 0;
         while (j < s.length()) {
             char ch = s.charAt(j);
-            if (hash[ch] == 0) {
+            hash[ch]++;
+            if (hash[ch] == 1) {
                 count++;
             }
-            hash[ch]++;
             while (count > k) {
-                char remove = s.charAt(i);
-                hash[remove]--;
-                if (hash[remove] == 0) {
+                hash[s.charAt(i)]--;
+                if (hash[s.charAt(i)] == 0) {
                     count--;
                 }
                 i++;
+            }
+            len = Math.max(len, j - i + 1);
+            j++;
+        }
+        return len;
+    }
+}
+```
+# Summary
+- Two pointers chasing one another (追击型双指针)
+
+
+
+# Follow up
+```java
+class Solution {
+    // BitTiger version, need to handle k == 0 seperately
+    public int lengthOfLongestSubstringKDistinct(String s, int k) {
+        if (k == 0) {
+            return 0;
+        }
+        Map<Character, Integer> map = new HashMap<>();
+        int i = 0;
+        int j = 0;
+        int len = 0;
+        while (j < s.length()) {
+            char ch = s.charAt(j);
+            if (map.size() < k || map.size() == k && map.containsKey(ch)) {
+                map.put(ch, j);
+            } else {
+                int index = j;
+                for (int idx : map.values()) {
+                    index = Math.min(index, idx);
+                }
+                i = index + 1;
+                map.remove(s.charAt(index));
+                map.put(ch, j);
             }
             len = Math.max(len, j - i + 1);
             j++;
@@ -85,5 +121,3 @@ class Solution {
     }
 }
 ```
-# Summary
-- Two pointers chasing one another (追击型双指针)
