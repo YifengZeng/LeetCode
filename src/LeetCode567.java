@@ -64,39 +64,35 @@ class Solution {
 
 
 
+
 class Solution {
     public boolean checkInclusion(String s1, String s2) {
-        if (s1.length() > s2.length()) {
-            return false;
-        }
-
-        int[] hash = new int[128];
+        int[] hash = new int[256];
         for (char ch : s1.toCharArray()) {
             hash[ch]++;
         }
-
         int count = s1.length();
+        int i = 0;
         int j = 0;
         while (j < s2.length()) {
             char ch = s2.charAt(j);
-            // System.out.println(ch + "," + j + "," + count + "," + Arrays.toString(hash));
             hash[ch]--;
             if (hash[ch] >= 0) {
                 count--;
             }
-            if (count == 0) {
-                return true;
-            }
-            int i = j - s1.length() + 1;
-            if (i >= 0) {
-                if (hash[s2.charAt(i)] >= 0) {
-                    count++;
+
+            while (count == 0) {
+                if (j - i + 1 == s1.length()) {
+                    return true;
                 }
                 hash[s2.charAt(i)]++;
+                if (hash[s2.charAt(i)] > 0) {
+                    count++;
+                }
+                i++;
             }
             j++;
         }
 
         return false;
     }
-}
