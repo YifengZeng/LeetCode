@@ -128,7 +128,7 @@ class Solution {
     private void pop(Deque<Character> stack, Deque<Integer> nums) {
         int n1 = nums.pop();
         int n2 = nums.pop();
-        int op = stack.pop();
+        char op = stack.pop();
         if (op == '+') {
             nums.push(n2 + n1);
         } else if (op == '-') {

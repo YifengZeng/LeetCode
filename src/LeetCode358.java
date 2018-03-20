@@ -44,3 +44,41 @@ class Solution {
         return sb.length() == s.length() ? sb.toString() : "";
     }
 }
+
+
+
+
+class Solution {
+    public String rearrangeString(String s, int k) {
+        int[] count = new int[26];
+        int[] valid = new int[26];
+        for (char ch : s.toCharArray()) {
+            count[ch - 'a']++;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            int index = findIndex(count, valid, i);
+            if (index == -1) {
+                return "";
+            }
+            count[index]--;
+            valid[index] = i + k;
+            sb.append((char) (index + 'a'));
+        }
+
+        return sb.toString();
+    }
+
+    private int findIndex(int[] count, int[] valid, int index) {
+        int nextIndex = -1;
+        int max = 0;
+        for (int i = 0; i < count.length; i++) {
+            if (count[i] > max && index >= valid[i]) {
+                max = count[i];
+                nextIndex = i;
+            }
+        }
+        return nextIndex;
+    }
+}

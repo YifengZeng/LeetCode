@@ -120,3 +120,31 @@ class Solution {
 
 # Summary
 - Store max first, use space to trade time.
+
+
+# Follow up
+Using monotonically decreasing stack
+```java
+class Solution {
+    public int trap(int[] height) {
+        if (height == null || height.length == 0) {
+            return 0;
+        }
+
+        Deque<Integer> stack = new ArrayDeque<>();
+        int sum = 0;
+        for (int i = 0; i < height.length; i++) {
+            int cur = height[i];
+            while (!stack.isEmpty() && height[stack.peek()] <= cur) {
+                int h = height[stack.pop()];
+                int index = stack.isEmpty() ? -1 : stack.peek();
+                int left = index == -1 ? 0 : height[index];
+                int w = i - index - 1;
+                sum += Math.max(0, Math.min(left, cur) - h) * w;
+            }
+            stack.push(i);
+        }
+        return sum;
+    }
+}
+```
