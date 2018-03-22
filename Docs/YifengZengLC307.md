@@ -66,50 +66,49 @@ Code
 ```java
 class NumArray {
 
-    SegmentTreeNode root;
-
     public NumArray(int[] nums) {
         root = build(nums, 0, nums.length - 1);
-        // print(root);
     }
 
     public void update(int i, int val) {
-        // print(root);
-        modify(root, i, val);
-        // print(root);
+        int oldVal = query(root, i, i);
+        modify(root, i, val, oldVal);
     }
 
     public int sumRange(int i, int j) {
         return query(root, i, j);
     }
 
-    class SegmentTreeNode {
+    class Node {
         int start;
         int end;
         int sum;
-        SegmentTreeNode left;
-        SegmentTreeNode right;
-        public SegmentTreeNode(int start, int end, int sum) {
+        Node left;
+        Node right;
+        public Node(int start, int end, int sum) {
             this.start = start;
             this.end = end;
             this.sum = sum;
-            this.left = null;
-            this.right = null;
         }
     }
 
-    private SegmentTreeNode build(int[] arr, int start, int end) {
+    Node root;
+
+    private Node build(int[] nums, int start, int end) {
         if (start > end) {
             return null;
         }
+
+        Node node = new Node(start, end, 0);
+
         if (start == end) {
-            return new SegmentTreeNode(start, end, arr[start]);
+            node.sum = nums[start];
+            return node;
         }
 
         int mid = (end - start) / 2 + start;
-        SegmentTreeNode node = new SegmentTreeNode(start, end, 0);
-        node.left = build(arr, start, mid);
-        node.right = build(arr, mid + 1, end);
+        node.left = build(nums, start, mid);
+        node.right = build(nums, mid + 1, end);
         if (node.left != null) {
             node.sum += node.left.sum;
         }
@@ -119,53 +118,38 @@ class NumArray {
         return node;
     }
 
-    private int query(SegmentTreeNode cur, int start, int end) {
-        if (cur == null || start > end) {
+    private int query(Node root, int start, int end) {
+        if (start > end) {
             return 0;
         }
-        if (start <= cur.start && cur.end <= end) {
-            return cur.sum;
+        if (start <= root.start && root.end <= end) {
+            return root.sum;
         }
-
-        int mid = (cur.end - cur.start) / 2 + cur.start;
-        if (end <= mid) {
-            return query(cur.left, start, end);
-        } else if (start > mid) {
-            return query(cur.right, start, end);
+        int rootMid = (root.end - root.start) / 2 + root.start;
+        if (end <= rootMid) {
+            return query(root.left, start, end);
+        } else if (rootMid < start) {
+            return query(root.right, start, end);
         }
-        return query(cur.left, start, mid) + query(cur.right, mid + 1, end);
+        return query(root.left, start, rootMid) + query(root.right, rootMid + 1, end);
     }
 
-    private int modify(SegmentTreeNode cur, int i, int val) {
-        if (cur == null) {
-            return 0;
+    private void modify(Node root, int i, int val, int oldVal) {
+        if (root == null) {
+            return;
         }
-        if (i == cur.start && i == cur.end) {
-            int oldValue = cur.sum;
-            cur.sum = val;
-            return oldValue;
+        root.sum = root.sum - oldVal + val;
+        if (root.start == i && root.end == i) {
+            return;
         }
 
-        int mid = (cur.end - cur.start) / 2 + cur.start;
-        int oldValue = 0;
-        if (cur.start <= i && i <= mid) {
-            oldValue = modify(cur.left, i, val);
-        } else if (mid + 1 <= i && i <= cur.end) {
-            oldValue = modify(cur.right, i, val);
+        int rootMid = (root.end - root.start) / 2 + root.start;
+        if (i <= rootMid) {
+            modify(root.left, i, val, oldVal);
+        } else {
+            modify(root.right, i, val, oldVal);
         }
-        cur.sum = cur.sum - oldValue + val;
-        return oldValue;
     }
-
-    // private void print(SegmentTreeNode root) {
-    //     if (root == null) {
-    //         return;
-    //     }
-    //
-    //     System.out.println(root.start + "," + root.end + ", " + root.sum);
-    //     print(root.left);
-    //     print(root.right);
-    // }
 }
 ```
 
