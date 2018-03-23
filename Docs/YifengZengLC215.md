@@ -17,7 +17,7 @@ You may assume k is always valid, 1 ≤ k ≤ array's length.
 
 # Idea Report
 
-I always have a primitive idea to solve "top k" problem which is using a heap. We can manually maintain a size k min heap, where this min heap contains k largest number in the input array. When new a number n comes in, we compare n to the smallest of the k numbers in the heap (heap.peek()) and see if n is larger, if it is larger, then the we poll out the smallerst number in the min heap because it cannot be the kth largest number, then put n in the min heap as a candidate. In the end, the smallest number in the min heap is the kth largest number in the array. This takes O(nlogk), because we have n numbers and for each number we need logk time to update the heap.
+I always have a primitive idea to solve "top k" problem by using a heap. We can manually maintain a size k min heap, where this min heap contains k largest number in the input array. When new a number n comes in, we compare n to the smallest of the k numbers in the heap (heap.peek()) and see if n is larger, if it is larger, then the we poll out the smallerst number in the min heap because it cannot be the kth largest number, then put n in the min heap as a candidate. In the end, the smallest number in the min heap is the kth largest number in the array. This takes O(nlogk), because we have n numbers and for each number we need logk time to update the heap.
 
 Code
 ```java
