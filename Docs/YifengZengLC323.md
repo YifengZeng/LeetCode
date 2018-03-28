@@ -94,7 +94,8 @@ class Solution {
         return count;
     }
 
-    private void dfsHelper(Map<Integer, Set<Integer>> map, Set<Integer> visited, int cur) {
+    private void dfsHelper(Map<Integer, Set<Integer>> map,
+                           Set<Integer> visited, int cur) {
         for (int nei : map.get(cur)) {
             if (!visited.contains(nei)) {
                 visited.add(nei);
