@@ -1,24 +1,13 @@
 class Solution {
     // BFS AC
     public int countComponents(int n, int[][] edges) {
-        Map<Integer, Set<Integer>> map = initMap(edges, n);
-        Set<Integer> visited = new HashSet<>();
+        List<Integer>[] map = initMap(edges, n);
+        int[] visited = new int[n];
 
         int count = 0;
         for (int i = 0; i < n; i++) {
-            if (!visited.contains(i)) {
-                Deque<Integer> q = new LinkedList<>();
-                q.offer(i);
-                visited.add(i);
-                while (!q.isEmpty()) {
-                    int cur = q.poll();
-                    for (int nei : map.get(cur)) {
-                        if (!visited.contains(nei)) {
-                            q.offer(nei);
-                            visited.add(nei);
-                        }
-                    }
-                }
+            if (visited[i] == 0) {
+                bfsHelper(map, visited, i);
                 count++;
             }
         }
@@ -26,14 +15,30 @@ class Solution {
         return count;
     }
 
-    private Map<Integer, Set<Integer>> initMap(int[][] edges, int n) {
-        Map<Integer, Set<Integer>> map = new HashMap<>();
+    private void bfsHelper(List<Integer>[] map, int[] visited, int i) {
+        Deque<Integer> q = new LinkedList<>();
+        visited[i] = 1;
+        q.offer(i);
+
+        while (!q.isEmpty()) {
+            int cur = q.poll();
+            for (int nei : map[cur]) {
+                if (visited[nei] == 0) {
+                    visited[nei] = 1;
+                    q.offer(nei);
+                }
+            }
+        }
+    }
+
+    private List<Integer>[] initMap(int[][] edges, int n) {
+        List<Integer>[] map = new List[n];
         for (int i = 0; i < n; i++) {
-            map.put(i, new HashSet<>());
+            map[i] = new ArrayList<>();
         }
         for (int[] edge : edges) {
-            map.get(edge[0]).add(edge[1]);
-            map.get(edge[1]).add(edge[0]);
+            map[edge[0]].add(edge[1]);
+            map[edge[1]].add(edge[0]);
         }
         return map;
     }
@@ -44,12 +49,13 @@ class Solution {
 class Solution {
     // DFS AC
     public int countComponents(int n, int[][] edges) {
-        Map<Integer, Set<Integer>> map = initMap(edges, n);
-        Set<Integer> visited = new HashSet<>();
+        List<Integer>[] map = initMap(edges, n);
+        int[] visited = new int[n];
 
         int count = 0;
         for (int i = 0; i < n; i++) {
-            if (!visited.contains(i)) {
+            if (visited[i] == 0) {
+                visited[i] = 1;
                 dfsHelper(map, visited, i);
                 count++;
             }
@@ -58,23 +64,23 @@ class Solution {
         return count;
     }
 
-    private void dfsHelper(Map<Integer, Set<Integer>> map, Set<Integer> visited, int cur) {
-        for (int nei : map.get(cur)) {
-            if (!visited.contains(nei)) {
-                visited.add(nei);
+    private void dfsHelper(List<Integer>[] map, int[] visited, int cur) {
+        for (int nei : map[cur]) {
+            if (visited[nei] == 0) {
+                visited[nei] = 1;
                 dfsHelper(map, visited, nei);
             }
         }
     }
 
-    private Map<Integer, Set<Integer>> initMap(int[][] edges, int n) {
-        Map<Integer, Set<Integer>> map = new HashMap<>();
+    private List<Integer>[] initMap(int[][] edges, int n) {
+        List<Integer>[] map = new List[n];
         for (int i = 0; i < n; i++) {
-            map.put(i, new HashSet<>());
+            map[i] = new ArrayList<>();
         }
         for (int[] edge : edges) {
-            map.get(edge[0]).add(edge[1]);
-            map.get(edge[1]).add(edge[0]);
+            map[edge[0]].add(edge[1]);
+            map[edge[1]].add(edge[0]);
         }
         return map;
     }
