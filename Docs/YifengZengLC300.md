@@ -24,6 +24,7 @@ For example for our example input, we can have a matrix:
 | ------- | --- | --- | --- | --- | --- | --- | --- | --- |
 | nums[i] | 10  | 9   | 2   | 5   | 3   | 7   | 101 | 18  |
 | f[i]    | 1   | 1   | 1   | 2   | 2   | 3   | 4   | 4   |
+
 To gte f[5], we need to see f[0], f[1], f[2], f[3], f[4]. If nums[5] > nums[2], nums[5] > nums[3], nums[5] > nums[4], we only calculate from these three indeces, because nums[0] or nums[1] will not construct an increasing subsequence with nums[5]. For nums[2], f[2] = 1, so f[5] can be 1 + 1 = 2. For nums[3], f[3] = 2, so f[5] can be 2 + 1 = 3. For nums[4], f[4] = 2, so f[5] can be 2 + 1 = 3. We get the maximum so f[5] = 3. We plus 1 because using the current f[5], the subsequence length increases 1. And at the end, we iterate the array f to get the maximum number and return. This takes O(n^2) time.
 
 Code:
