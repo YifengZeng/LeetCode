@@ -1,41 +1,39 @@
-#**LeetCode56**
----
-https://leetcode.com/problems/merge-intervals/description/
+&copy; Yifeng Zeng
 
-Yifeng Zeng
+# Description
 
-#题目描述
----
-Merge Intervals
+[56. Merge Intervals](https://leetcode.com/problems/merge-intervals/description/)
 
-#思路报告
----
+Given a collection of intervals, merge all overlapping intervals.
+```
+For example,
+Given [1,3],[2,6],[8,10],[15,18],
+return [1,6],[8,10],[15,18].
+```
 
-如果要merge a list of intervals，我们首先想到的是在这个list里面选两个interval来merge，那么就是两个for循环，O(n^2)。对于每一对interval： i1，i2，我们要看i1.start是否在[i2.start, i2.end]之间，还要看i2.star是否在[i1.start, i1.end]之间。那么能不能提速呢？能不能只检查一半，即只检查i1.start是否在[i2.start, i2.end]之间呢？可以，只要我们保证i1.start >= i2.start就可以了。怎样保证呢？我们可以把所有的intervals按照i.start排序就好了，那么sort的时间就是O(nlogn)。所以我们要自己写一个Interval的comparator。那么假设intervals已经排好序了，我们还需要两个for循环做O(n^2)的时间吗？明显不用，我们只需要把第一个interval拿出来(假设为prev)，作为一个base case，再拿后面的interval拿出来(假设为cur)跟它比较。因为我们已经排序了，所以一定有prev.start <= cur.start，那么我们只用检查cur.end是否小于等于pre.end，如果是，那么我们可以merge，如果不是，证明prev不会有其他的可以merge了，因为后面的i.start也一定大于等于pre.end。那么我们就可以把这个prev放在result里面了。但是我们要注意的是，最后一个prev，它将不再会有其他的interval跟它比较了，所以也要把它放到result里面，就刚跟LC186最后一个word类似。所以我们把merge的时间复杂度降到了O(n)，但是排序用了O(nlogn)，所以整个算法的时间复杂度是O(nlogn)。
+# Idea
 
-代码如下：
+The primitive idea is to select any two intervals and merge then together, we need a nested interation to do that, so the time complexity would be O(n^2). How do we speed up? We can make one side of the intervals to be ordered, and compare the other side. We can sort the intervals by start. Then we check the intervals next to each other, say i1, i2. Because it's already sorted, we know i1.start <= i2.start. So if i1.end < i2.start, we know i1 and i2 have no overlap, we can put i1 into result list. Otherwise, it means there is an overlap between i1 and i2, we can do the merge. The merged i.start is i1.start because we know i1.start <= i2.start, and merged i.end is the maximum between i1.end and i2.end. The sort will take O(nlogn), and merge will take O(n), so
+
+Java
 ```java
 class Solution {
-    Comparator<Interval> myComparator = new Comparator<Interval>() {
-        @Override
-        public int compare(Interval o1, Interval o2) {
-            return o1.start - o2.start;
-        }
-    };
     public List<Interval> merge(List<Interval> intervals) {
-        List<Interval> res = new ArrayList<>();
         if (intervals == null || intervals.size() == 0) {
-            return res;
+            return intervals;
         }
-        Collections.sort(intervals, myComparator);
+
+        Collections.sort(intervals, (a, b) -> a.start - b.start);
+        List<Interval> res = new ArrayList<>();
         Interval prev = intervals.get(0);
+
         for (int i = 1; i < intervals.size(); i++) {
             Interval cur = intervals.get(i);
-            if (cur.start <= prev.end) {
-                prev.end = Math.max(prev.end, cur.end);
-            } else {
+            if (cur.start > prev.end) {
                 res.add(prev);
                 prev = cur;
+            } else {
+                prev.end = Math.max(prev.end, cur.end);
             }
         }
         res.add(prev);
@@ -44,10 +42,34 @@ class Solution {
 }
 ```
 
+C++
+```cpp
+class Solution {
+public:
+    vector<Interval> merge(vector<Interval>& intervals) {
+        if (intervals.empty()) {
+            return intervals;
+        }
+        vector<Interval> res;
+        sort(intervals.begin(), intervals.end(),
+             [](Interval a, Interval b){return a.start < b.start;});
+        Interval pre = intervals[0];
+        for (int i = 1; i < intervals.size(); i++) {
+            Interval cur = intervals[i];
+            if (cur.start > pre.end) {
+                res.push_back(pre);
+                pre = cur;
+            } else {
+                pre.end = max(pre.end, cur.end);
+            }
+        }
+        res.push_back(pre);
 
-#套路总结
----
-- 我们从最暴力的O(n^2)看出来，两个interval相互比较能不能merge，想到能否只比较一边，从而想到排序。
-- 当输入杂乱无章的时候可以考虑排序，固定一端检查另一端。
-- 空间复杂度???
-  - 其实我的理解是作为输出的space不计入复杂度，那么就是O(1)，但是这个res确实是extra的，由于输入是List，那么我们想要在它本身里面去merge后删除一个interval其实代价也是O(n)，那么对List做“inplace”操作反而效率不高，所以就直接另外new了一个List，这点可以跟面试官讨论。
+        return res;
+    }
+};
+```
+
+
+# Summary
+- To speed up a nested loop, we can fix outter loop. Inorder to fix outter loop, we may want to sort.
