@@ -1,38 +1,46 @@
-#**LeetCode155**
----
-https://leetcode.com/problems/min-stack/description/
+&copy; Yifeng Zeng
 
-Yifeng Zeng
+# Description
 
-#题目描述
----
-Min Stack
+[155. Min Stack](https://leetcode.com/problems/min-stack/description/)
 
-#思路报告
----
-这个题是去年听太阁算法左程云老师的课讲的，当时没多想。后来仔细想一下其实挺straight forward的，要实现一个min stack那么stack本身的功能就用一个ArrayDeque作为stack来完成。那么min这个property肯定需要另外维护。什么数据结构最接近stack呢，肯定先想到stack本身，那么另外用一个stack（minStack）来维护min这个property可以不呢，当然可以。push的时候push当前整个stack里面最小的数就好，那么push进minStack时，peek minStack的值跟要push的x比较就好，因为peek minStack已经是整个stack里面最小的值了。x小就push x，否则push misStack.peek()。
+Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.
+```
+push(x) -- Push element x onto stack.
+pop() -- Removes the element on top of the stack.
+top() -- Get the top element.
+getMin() -- Retrieve the minimum element in the stack.
+Example:
+MinStack minStack = new MinStack();
+minStack.push(-2);
+minStack.push(0);
+minStack.push(-3);
+minStack.getMin();   --> Returns -3.
+minStack.pop();
+minStack.top();      --> Returns 0.
+minStack.getMin();   --> Returns -2.
+```
 
+# Idea
 
-代码如下
+We need somehow maintain the minimum number property. A data structure that is closest to a stack is stack itself, so we can use another stack to maintain the minimum number. Every time we push a number, we push the number in our original dataStack, and push the global minimum number in our minStack. How do we know the global minimum? The Math.min(x, minStack.peek()) is it. When pop out, we pop out both stacks.
 
+Java
 ```java
 class MinStack {
 
-    Deque<Integer> dataStack;// = new ArrayDeque<>();
-    Deque<Integer> minStack;// = new ArrayDeque<>();
-    /** initialize your data structure here. */
+    private Deque<Integer> minStack;
+    private Deque<Integer> dataStack;
+
     public MinStack() {
-        dataStack = new ArrayDeque<>();
         minStack = new ArrayDeque<>();
+        dataStack = new ArrayDeque<>();
     }
 
     public void push(int x) {
         dataStack.push(x);
-        if (minStack.isEmpty() || minStack.peek() > x) {
-            minStack.push(x);
-        } else {
-            minStack.push(minStack.peek());
-        }
+        minStack.push((minStack.isEmpty() || x < minStack.peek()) ?
+                      x : minStack.peek());
     }
 
     public void pop() {
@@ -50,6 +58,76 @@ class MinStack {
 }
 ```
 
-#套路总结
----
-- 既然题目是设计min stack，那么先考虑把basic的stack功能用ArrayDeque实现，再考虑怎样维护min这个property。先考虑用跟stack有最接近性质的stack本身来维护min，那么只要保证每次push的是整个stack里面的最小值就可以了，pop的时候两个stack同时pop，getMin的时候peek minStack就好。
+C++
+```cpp
+class MinStack {
+public:
+    stack<int> dataStack;
+    stack<int> minStack;
+    MinStack() {
+
+    }
+
+    void push(int x) {
+        dataStack.push(x);
+        minStack.push((minStack.empty() || x < minStack.top()) ?
+                      x : minStack.top());
+    }
+
+    void pop() {
+        dataStack.pop();
+        minStack.pop();
+    }
+
+    int top() {
+        return dataStack.top();
+    }
+
+    int getMin() {
+        return minStack.top();
+    }
+};
+```
+
+In the case the numbers pushed are mostly increasing, we don't have to push the minStack every time.
+
+Java
+```java
+class MinStack {
+
+    private Deque<Integer> minStack;
+    private Deque<Integer> dataStack;
+
+    public MinStack() {
+        minStack = new ArrayDeque<>();
+        dataStack = new ArrayDeque<>();
+    }
+
+    public void push(int x) {
+        dataStack.push(x);
+        if (minStack.isEmpty() || x <= minStack.peek()) {
+            minStack.push(x);
+        }
+    }
+
+    public void pop() {
+        if (dataStack.peek().equals(minStack.peek())) {
+            minStack.pop();
+        }
+        dataStack.pop();
+
+    }
+
+    public int top() {
+        return dataStack.peek();
+    }
+
+    public int getMin() {
+        return minStack.peek();
+    }
+}
+```
+
+# Summary
+- Cache model, maintain a caching data structure.
+- OOD

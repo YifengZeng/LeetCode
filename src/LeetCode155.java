@@ -1,25 +1,58 @@
 class MinStack {
 
-    Deque<Integer> dataStack;// = new ArrayDeque<>();
-    Deque<Integer> minStack;// = new ArrayDeque<>();
-    /** initialize your data structure here. */
+    private Deque<Integer> minStack;
+    private Deque<Integer> dataStack;
+
     public MinStack() {
-        dataStack = new ArrayDeque<>();
         minStack = new ArrayDeque<>();
+        dataStack = new ArrayDeque<>();
     }
 
     public void push(int x) {
         dataStack.push(x);
-        if (minStack.isEmpty() || minStack.peek() > x) {
-            minStack.push(x);
-        } else {
-            minStack.push(minStack.peek());
-        }
+        minStack.push((minStack.isEmpty() || x < minStack.peek()) ?
+                      x : minStack.peek());
     }
 
     public void pop() {
         dataStack.pop();
         minStack.pop();
+    }
+
+    public int top() {
+        return dataStack.peek();
+    }
+
+    public int getMin() {
+        return minStack.peek();
+    }
+}
+
+
+
+class MinStack {
+
+    private Deque<Integer> minStack;
+    private Deque<Integer> dataStack;
+
+    public MinStack() {
+        minStack = new ArrayDeque<>();
+        dataStack = new ArrayDeque<>();
+    }
+
+    public void push(int x) {
+        dataStack.push(x);
+        if (minStack.isEmpty() || x <= minStack.peek()) {
+            minStack.push(x);
+        }
+    }
+
+    public void pop() {
+        if (dataStack.peek().equals(minStack.peek())) {
+            minStack.pop();
+        }
+        dataStack.pop();
+
     }
 
     public int top() {
