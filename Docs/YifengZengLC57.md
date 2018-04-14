@@ -1,45 +1,81 @@
-#**LeetCode57**
----
-https://leetcode.com/problems/insert-interval/description/
+&copy; Yifeng Zeng
 
-Yifeng Zeng
+# Description
 
-#题目描述
----
-Insert Interval
+[57. Insert Interval](https://leetcode.com/problems/insert-interval/description/)
 
-#思路报告
----
+Given a set of non-overlapping intervals, insert a new interval into the intervals (merge if necessary).
 
-因为intervals已经排了序了，所以我们只需要把newInterval的start和end在这些intervals里面对应的位置找到就行了。由于是从小到大排序的，我们先看newInterval.start，我们遍历intervals，找到某一个intervals.get(i)，当i.end < newInterval.start是我们把直接放到result里面，因为不会跟newInterval有overlap。这时我们有了第一个newInterval.start < i.end的情况，那么我们要考虑newInterval.start跟i.start的大小，两者取更小的作为newInterval的start即可。然后我们要找到这个newInterval跟哪些intervals.get(i)相overlap，那么其实只需要找到最后一个i.start小于等于newInterval.end的interval即可，那么更新newInterval.end为newInterval.end和i.end两者更大的即可。剩下后面的i.start都比newInterval.end要大，也不会有overlap，所以先把newInterval放进result里面，再把后面所有剩下的intervals放进result里面就可以了。
+You may assume that the intervals were initially sorted according to their start times.
 
-代码如下：
+Example 1:
+Given intervals [1,3],[6,9], insert and merge [2,5] in as [1,5],[6,9].
+
+Example 2:
+Given [1,2],[3,5],[6,7],[8,10],[12,16], insert and merge [4,9] in as [1,2],[3,10],[12,16].
+
+This is because the new interval [4,9] overlaps with [3,5],[6,7],[8,10].
+
+# Idea
+
+Because intervals are already sorted, we only need to find out where the newInterval' start and end should be, and merge if necessary. Because it's sorted according to thier start times, we can firstly check newInterval.start. We iterate intervals and find some intervals.get(i), if i.end < new.start, that means those are intervals before newInterval without any overlap, so we put those i directly into our result. Now we have the first i.end >= new.start, they are overlapped, so we choose Math.min(i.start, new.start) as the new.start to merge. And we also need to choose Math.max(i.end, new.end) as the new.end to merge, until we find some i which i.start > new.end. Starting from this i, they are no longer overlapped, so we add the updated/merged newInterval to the result, and add the rest of the non-overlapped intervals into the result.
+
+Java
 ```java
-public List<Interval> insert(List<Interval> intervals, Interval newInterval) {
-    List<Interval> result = new ArrayList<>();
+class Solution {
+  public List<Interval> insert(List<Interval> intervals, Interval newInterval) {
+    List<Interval> res = new ArrayList<>();
 
     int i = 0;
     while (i < intervals.size() && intervals.get(i).end < newInterval.start) {
-        result.add(intervals.get(i));
-        i++;
+        res.add(intervals.get(i++));
     }
-    if (i < intervals.size()) {
+
+    while (i < intervals.size() && newInterval.end >= intervals.get(i).start) {
         newInterval.start = Math.min(newInterval.start, intervals.get(i).start);
-    }
-    while (i < intervals.size() && intervals.get(i).start <= newInterval.end) {
         newInterval.end = Math.max(newInterval.end, intervals.get(i).end);
         i++;
     }
-    result.add(newInterval);
+
+    res.add(newInterval);
+
     while (i < intervals.size()) {
-        result.add(intervals.get(i));
-        i++;
+        res.add(intervals.get(i++));
     }
-    return result;
+    return res;
+  }
 }
 ```
 
+C++
+```cpp
+class Solution {
+public:
+    vector<Interval> insert(vector<Interval>& intervals, Interval newInterval) {
+        vector<Interval> res;
+        int i = 0;
+        while (i < intervals.size() && intervals[i].end < newInterval.start) {
+            res.push_back(intervals[i++]);
+        }
 
-#套路总结
----
-- 其实这个题就是对于一个复杂的问题拆分成多个简单问题的例子，每一个步骤单独看起来其实很简单，但是不容易从复杂问题想到，而且有一些corner case需要考虑，比如intervals的size为0的情况。
+        while (i < intervals.size() && intervals[i].start <= newInterval.end) {
+            newInterval.start = min(newInterval.start, intervals[i].start);
+            newInterval.end = max(newInterval.end, intervals[i].end);
+            i++;
+        }
+
+        res.push_back(newInterval);
+
+        while (i < intervals.size()) {
+            res.push_back(intervals[i++]);
+        }
+
+        return res;
+    }
+};
+```
+
+# Summary
+- Discuss different situations and code accordingly.
+- Reduce the problem into a sequence of sub problems.
+- Pure implementation problem.
