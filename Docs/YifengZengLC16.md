@@ -1,51 +1,77 @@
-#**LeetCode16**
----
-https://leetcode.com/problems/3sum-closest/description/
+&copy; Yifeng Zeng
 
-Yifeng Zeng
+# Description
 
-#题目描述
----
-3Sum Closest
+[16. 3Sum Closest](https://leetcode.com/problems/3sum-closest/description/)
 
-#思路报告
----
+Given an array nums of n integers and an integer target, find three integers in nums such that the sum is closest to target. Return the sum of the three integers. You may assume that each input would have exactly one solution.
+```
+Example:
+Given array nums = [-1, 2, 1, -4], and target = 1.
+The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
+```
 
-LC167. Two Sum II - Input array is sorted的思路，左右两个指针，左右之和大于target，那么右边往左移使得sum变小，左右之和小于target，那么左边往右移使得sum变大。本题可以借鉴LC167的思路，3sum无非就是固定一个element，另外两个element像LC167那样移动去找target或者找closest target。那么我们先对数组排序，然后从左往右固定nums[i]，那么其实就是在i后面找最接近target - nums[i]的two sum。也是大于target - nums[i]时，右边往左移使sum变小，小于target - nums[i]时，左边往右移使sum变大。取绝对值来保存different最小时的nums[i]， nums[left], nums[right]的sum。
+# Idea
 
-代码如下：
+My primitive idea is to use a 3 layer (i,j,k) nested loop to enumerate all possible combination triplets to find the sum that is closest to the target, which will take O(n^3) time. How do we speed up? We can still enumerate the outter loop i, so this problem is reduced to a two sum closest problem where we need to find nums[j] + nums[k] closest to target - nums[i]. If it is an two sum equal problem, we can use a map to find nums[j] + nums[k] == target - nums[i]. But it is a closest problem so we can sort first then use two approaching pointers with one scan. This way we use O(nlogn) to sort, O(n) time to enumeate outter loop i, and O(n) time for the two approaching pointers in the inner loop, which makes the algorithm O(n^2). For the inner loop. We are looking for num[j] + nums[k] closest to target - nums[i]. Since it is sorted, j starts from left most side, and k starts from right most side. Then if nums[j] + nums[k] > target - nums[i], we need to decrease the sum so k move to left, on the contrary, if num[j] + nums[k] < target - nums[i], we need to increase the sum so j move to right, otherwise if it equal, we can just return directly because the absolut differece is zero.
+
+Java
 ```java
-public int threeSumClosest(int[] nums, int target) {
-    if (nums == null || nums.length == 0) {
-        throw new IllegalArgumentException("Invalid input");
-    }
-
-    Arrays.sort(nums);
-    int diff = Integer.MAX_VALUE;
-    int res = Integer.MAX_VALUE;
-    for (int i = 0; i < nums.length - 2; i++) {
-        int t = target - nums[i];
-        int left = i + 1;
-        int right = nums.length - 1;
-        while (left < right) {
-            int sum = nums[left] + nums[right] - t;
-            if (Math.abs(sum) < diff) {
-                diff = Math.abs(sum);
-                res = sum + target;
-            }
-            if (sum > 0) {
-                right--;
-            } else {
-                left++;
+class Solution {
+    public int threeSumClosest(int[] nums, int target) {
+        Arrays.sort(nums);
+        int res = nums[0] + nums[1] + nums[2];
+        for (int i = 0; i < nums.length; i++) {
+            int j = i + 1;
+            int k = nums.length - 1;
+            while (j < k) {
+                int sum = nums[i] + nums[j] + nums[k];
+                if (Math.abs(res - target) > Math.abs(sum - target)) {
+                    res = sum;
+                }
+                if (sum == target) {
+                    return sum;
+                } else if (sum > target) {
+                    k--;
+                } else {
+                    j++;
+                }
             }
         }
+        return res;
     }
-    return res;
 }
 ```
 
+C++
+```cpp
+class Solution {
+public:
+    int threeSumClosest(vector<int>& nums, int target) {
+        sort(nums.begin(), nums.end());
+        int res = nums[0] + nums[1] + nums[2];
+        for (int i = 0; i < nums.size(); i++) {
+            int j = i + 1;
+            int k = nums.size() - 1;
+            while (j < k) {
+                int sum = nums[i] + nums[j] + nums[k];
+                if (abs(res - target) > abs(sum - target)) {
+                    res = sum;
+                }
+                if (sum == target) {
+                    return sum;
+                } else if (sum > target) {
+                    k--;
+                } else {
+                    j++;
+                }
+            }
+        }
+        return res;
+    }
+};
+```
 
-#套路总结
----
-- 数组未排序没有好办法解的情况下可以考虑先排序。
-- 多个数组合的情况可以考虑固定其中一个。
+# Summary
+- O(n^3) brute force may be speed up by O(nlogn) sorting then achieve O(n^2) time complexity.
+- Fix outter loop and optimize inner loop.
