@@ -75,3 +75,83 @@ public:
 # Summary
 - O(n^3) brute force may be speed up by O(nlogn) sorting then achieve O(n^2) time complexity.
 - Fix outter loop and optimize inner loop.
+
+# 3Sum
+This is actually the same idea of 3Sum Closest. After sorting, we fix the outter loop and use two approaching pointers in the inner loop, if we find equal, we move both approaching pointers j and k, if sum is less than 0, we increase sum by moving smaller number j to right, if sum is larger than 0, we decrese sum by moving larger number k to left. If one triplet is found, we need to deduplicate by skipping the same numbers.
+
+Java
+```java
+class Solution {
+    public List<List<Integer>> threeSum(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        Arrays.sort(nums);
+
+        int i = 0;
+        while (i < nums.length) {
+            int j = i + 1;
+            int k = nums.length - 1;
+            int target = -nums[i];
+            while (j < k) {
+                int sum = nums[j] + nums[k];
+                if (sum == target) {
+                    res.add(Arrays.asList(nums[i], nums[j], nums[k]));
+                    do { // deduplication
+                        j++;
+                    } while (j < k && nums[j] == nums[j - 1]);
+                    do { // deduplication
+                        k--;
+                    } while (j < k && nums[k] == nums[k + 1]);
+                } else if (sum < target) {
+                    j++;
+                } else {
+                    k--;
+                }
+            }
+            do { // deduplication
+                i++;
+            } while (i < nums.length && nums[i] == nums[i - 1]);
+        }
+
+        return res;
+    }
+}
+```
+
+C++
+```cpp
+class Solution {
+public:
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        vector<vector<int>> res;
+        sort(nums.begin(), nums.end());
+
+        int i = 0;
+        while (i < nums.size()) {
+            int j = i + 1;
+            int k = nums.size() - 1;
+            int target = -nums[i];
+            while (j < k) {
+                int sum = nums[j] + nums[k];
+                if (sum == target) {
+                    res.push_back({nums[i], nums[j], nums[k]});
+                    do {
+                        j++;
+                    } while (j < k && nums[j] == nums[j - 1]);
+                    do {
+                        k--;
+                    } while (j < k && nums[k] == nums[k + 1]);
+                } else if (sum < target) {
+                    j++;
+                } else {
+                    k--;
+                }
+            }
+            do {
+                i++;
+            } while (i < nums.size() && nums[i] == nums[i - 1]);
+        }
+
+        return res;
+    }
+};
+```
