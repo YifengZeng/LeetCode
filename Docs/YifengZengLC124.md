@@ -1,8 +1,4 @@
-# **LeetCode 124**
-https://leetcode.com/problems/binary-tree-maximum-path-sum/description/
-
-Yifeng Zeng
-
+&copy; Yifeng Zeng
 # Description
 [124. Binary Tree Maximum Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/description/)
 
@@ -28,7 +24,7 @@ So this is a child-to-parent-to-child path sum. So we can split this path sum in
 
 When writing the code, we can discuss the corner cases: if left/right side path sum is less than 0, we need carefully compare all kinds of the situation. Another trick I learned in the class is to use int[] max; instead of the global variable.
 
-Code:
+Java
 ```java
 class Solution {
   // AC
@@ -56,6 +52,36 @@ class Solution {
 }
 ```
 
+C++
+```cpp
+class Solution {
+public:
+    int maxPathSum(TreeNode* root) {
+        if (root == NULL) {
+            return 0;
+        }
+
+        int max = root->val;
+        helper(root, max);
+        return max;
+    }
+
+private:
+    int helper(TreeNode* root, int& max) {
+        if (root == NULL) {
+            return 0;
+        }
+
+        int left = helper(root->left, max);
+        int right = helper(root->right, max);
+        int temp = std::max(root->val,
+            std::max(left + root->val, right + root->val));
+        max = std::max(max, std::max(temp, left + root->val + right));
+        return temp;
+    }
+};
+```
+
 # Summary
 - If we need information from left/right child and do not need pass any parent information down to children, we can just use bottom up method.
-- Use int[] max = new int[1]; instead of a global variable.
+- Use int[] max = new int[1]; instead of a global variable, C++ can pass reference.
